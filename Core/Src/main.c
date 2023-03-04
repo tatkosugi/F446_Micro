@@ -43,6 +43,14 @@
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
+char formBuf[13];
+
+#define RECV_BUFF_SIZE 80
+static char recv_buf[RECV_BUFF_SIZE];
+
+volatile 	int 		Sys_Tick;
+char 		*RcvPtr;
+
 
 /* USER CODE END PV */
 
@@ -56,6 +64,115 @@ static void MX_USART2_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+uint8_t uartGetchnw(){
+  unsigned char c;
+  HAL_StatusTypeDef stat;
+
+	stat = HAL_UART_Receive(&huart2, &c, 1, 1);
+	if (stat == HAL_OK)
+		return c;
+	else
+		return 0;
+}
+uint8_t uartGetch(){
+	unsigned char c;
+
+	c = 0;
+	while (c == 0){
+//		if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_3)== 0){
+//			recv_buf[0]	='S';
+//			recv_buf[1]	='X';
+//			RcvPtr	= &recv_buf[2];
+//			c = 0x0d;
+//		}
+//		else
+			c = uartGetchnw();
+	}
+
+	return c;
+}
+void uartPutch(uint8_t *c){
+	  HAL_UART_Transmit( &huart2, c, 1, 100000);
+}
+
+void uartPuts( char *s){
+	int		num;
+	char	*cptr;
+
+	num		= 0;
+	cptr	= s;
+
+	while(*cptr != 0){
+		cptr++;
+		num ++;
+	}
+	HAL_UART_Transmit( &huart2, (unsigned char *)s, num , 100000);
+}
+
+char *formHex(uint32_t n, int dig) {
+	static const char hex[] = {
+		'0', '1', '2', '3', '4', '5', '6', '7',
+		'8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+	};
+
+	formBuf[dig--] = '\0';
+	while (dig >= 0) {
+		formBuf[dig--] = hex[n &  0xf];
+		n >>= 4;
+	}
+	return formBuf;
+}
+char		ToUpper(char cc)
+{
+	char res;
+
+	if ('a'<=cc && cc<='z')
+		res = cc + 'A'- 'a';
+	else
+		res = cc;
+
+	return res;
+}
+
+int		Asc2Bin(char cc)
+{
+	int		ret;
+
+	if(('0' <= cc) && (cc <= '9'))
+		ret	= cc - '0';
+	else if (('A' <= cc) && (cc <= 'F'))
+		ret	= cc - 'A' + 10;
+	else
+		ret	= -1;
+
+	return ret;
+}
+
+int		GetHex(int n)
+{
+	int	i,ret,wk;
+
+	ret	= 0;
+	for (i=0;(i<n) && (ret != -1);i++){
+		if (*RcvPtr == 0)
+			ret	= -1;
+		else {
+			wk	= Asc2Bin(*RcvPtr++);
+			if (wk == -1)
+				ret	= -1;
+			else
+				ret	= (ret << 4) + wk;
+		}
+	}
+	return	ret;
+}
+
+void	HelpMessage()
+{
+	uartPuts( "\r\nSTM F446 monitor ver 1.00 [Mar.05.2023]");
+}
+
+
 
 /* USER CODE END 0 */
 
@@ -96,6 +213,47 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  uartPuts( "\r\nCommand:");
+
+		RcvPtr	= recv_buf;
+		int Cont	= 1;
+
+		while (Cont){
+			*RcvPtr = ToUpper(uartGetch());
+			if(*RcvPtr == 0x0d){
+				//uartPuts(formHex(*RcvPtr,2));
+				//uartPuts( "\r\n\0");
+				//int	*Memptr;
+				*RcvPtr = 0;
+				RcvPtr	= recv_buf;
+				Cont	= 0;
+				switch (*RcvPtr++){
+				//case 'R':
+				//	DbgRun();
+				//	break;
+				case 'H':
+					HelpMessage();
+					break;
+				case 'D':
+					uartPuts( "\r\nDebug       : ");
+					uartPuts(formHex(Sys_Tick,4));
+//					DispStat();
+//					uartPuts( "\r\n tim ->  ");
+//					uartPuts(formHex(TIM3->CNT,4));
+//					uartPuts( "\r\n Measure -> ");
+//					uartPuts(formHex(TimInterval,8));
+					break;
+				case 'I':
+
+//	HumiF	= Humi * 100.0 / 65535.0;
+//	TempF	= - 45 + 175.0 * Temp / 65535.0;
+					
+					break;
+				}
+			}
+			else
+				RcvPtr++;
+		}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
