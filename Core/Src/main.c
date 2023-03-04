@@ -53,6 +53,8 @@ static char recv_buf[RECV_BUFF_SIZE];
 volatile 	int 		Sys_Tick;
 char 		*RcvPtr;
 
+uint8_t		sbuf[300], rbuf[300];
+
 
 /* USER CODE END PV */
 
@@ -175,6 +177,20 @@ void	HelpMessage()
 	uartPuts( "\r\nSTM F446 monitor ver 1.00 [Mar.05.2023]");
 }
 
+void		SpiTest()
+{
+	HAL_StatusTypeDef s;
+	
+	HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin, GPIO_PIN_RESET);
+	s = HAL_SPI_TransmitReceive(&hspi2, sbuf, rbuf, 2, 1000);
+	HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin, GPIO_PIN_SET);
+	
+	if (HAL_OK == s)
+	{
+		uartPuts( "\r\nGood");
+	}
+
+}
 
 
 /* USER CODE END 0 */
@@ -247,8 +263,8 @@ int main(void)
 //					uartPuts( "\r\n Measure -> ");
 //					uartPuts(formHex(TimInterval,8));
 					break;
-				case 'I':
-
+				case 'T':
+					SpiTest();
 //	HumiF	= Humi * 100.0 / 65535.0;
 //	TempF	= - 45 + 175.0 * Temp / 65535.0;
 					
