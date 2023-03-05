@@ -1,5 +1,6 @@
 #MicroXplorer Configuration settings - do not modify
 File.Version=6
+GPIO.groupedBy=Group By Peripherals
 KeepUserPlacement=false
 Mcu.Family=STM32F4
 Mcu.IP0=NVIC
@@ -94,6 +95,8 @@ PC14-OSC32_IN.Signal=RCC_OSC32_IN
 PC15-OSC32_OUT.Locked=true
 PC15-OSC32_OUT.Mode=LSE-External-Oscillator
 PC15-OSC32_OUT.Signal=RCC_OSC32_OUT
+PC2.GPIOParameters=GPIO_PuPd
+PC2.GPIO_PuPd=GPIO_PULLUP
 PC2.Mode=Full_Duplex_Master
 PC2.Signal=SPI2_MISO
 PH0-OSC_IN.Locked=true

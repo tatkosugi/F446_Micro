@@ -76,6 +76,19 @@ void Error_Handler(void);
 #define SWO_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
+#define CMD0    (0x40+0)        /* GO_IDLE_STATE            */
+#define CMD1    (0x40+1)        /* SEND_OP_COND (MMC)       */
+#define ACMD41  (0xC0+41)       /* SEND_OP_COND (SDC)       */
+#define CMD8    (0x40+8)        /* SEND_IF_COND             */
+#define CMD9    (0x40+9)        /* SEND_CSD                 */
+#define CMD16   (0x40+16)       /* SET_BLOCKLEN             */
+#define CMD17   (0x40+17)       /* READ_SINGLE_BLOCK        */
+#define CMD24   (0x40+24)       /* WRITE_SINGLE_BLOCK       */
+#define CMD42   (0x40+42)       /* LOCK_UNLOCK              */
+#define CMD55   (0x40+55)       /* APP_CMD                  */
+#define CMD58   (0x40+58)       /* READ_OCR                 */
+#define CMD59   (0x40+59)       /* CRC_ON_OFF               */
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

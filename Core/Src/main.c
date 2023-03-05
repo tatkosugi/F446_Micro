@@ -183,9 +183,27 @@ void	HelpMessage()
 void		SpiTest()
 {
 	HAL_StatusTypeDef s;
+	int		loop;
 	
+	s = HAL_SPI_Transmit(&hspi2, sbuf, 10, 1000);		// dummy pulse
+
+	sbuf[0]		= CMD0;
+	sbuf[1]		= 0;
+	sbuf[2]		= 0;
+	sbuf[3]		= 0;
+	sbuf[4]		= 0;
+	sbuf[5]		= 0x95;		//crc cmd 0
+
 	HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin, GPIO_PIN_RESET);
-	s = HAL_SPI_TransmitReceive(&hspi2, sbuf, rbuf, 2, 1000);
+	s = HAL_SPI_TransmitReceive(&hspi2, sbuf, rbuf, 6, 1000);
+
+	loop	= 0;
+	HAL_SPI_Receive(&hspi2, rbuf, 1, 1000);
+	while(loop < 100 ){
+		loop ++;
+		uartPuts(formHex(rbuf[0],2));
+	}
+
 	HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin, GPIO_PIN_SET);
 	
 	if (HAL_OK == s)
