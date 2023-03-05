@@ -199,17 +199,42 @@ void		SpiTest()
 
 	loop	= 0;
 	HAL_SPI_Receive(&hspi2, rbuf, 1, 1000);
+	uartPuts("\r\n");
 	while(loop < 100 ){
 		loop ++;
+		HAL_Delay(10);
 		uartPuts(formHex(rbuf[0],2));
+		HAL_SPI_Receive(&hspi2, rbuf, 1, 1000);
 	}
-
 	HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin, GPIO_PIN_SET);
 	
 	if (HAL_OK == s)
 	{
 		uartPuts( "\r\nGood");
 	}
+
+	sbuf[0]		= CMD1;
+	sbuf[1]		= 0;
+	sbuf[2]		= 0;
+	sbuf[3]		= 0;
+	sbuf[4]		= 0;
+	sbuf[5]		= 0x95;		//crc cmd 0
+
+	HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin, GPIO_PIN_RESET);
+	HAL_SPI_TransmitReceive(&hspi2, sbuf, rbuf, 6, 1000);
+
+	loop	= 0;
+	HAL_SPI_Receive(&hspi2, rbuf, 1, 1000);
+	uartPuts("\r\n");
+	while(loop < 100 ){
+		loop ++;
+		HAL_Delay(10);
+		uartPuts(formHex(rbuf[0],2));
+		HAL_SPI_Receive(&hspi2, rbuf, 1, 1000);
+	}
+
+
+	HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin, GPIO_PIN_SET);
 
 }
 
