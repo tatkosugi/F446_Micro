@@ -281,7 +281,7 @@ int main(void)
 					break;
 				case 'D':
 					uartPuts( "\r\nDebug       : ");
-					uartPuts(formHex(Sys_Tick,4));
+					uartPuts(formHex(Sys_Tick,8));
 //					DispStat();
 //					uartPuts( "\r\n tim ->  ");
 //					uartPuts(formHex(TIM3->CNT,4));
